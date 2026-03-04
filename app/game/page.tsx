@@ -5,6 +5,7 @@ import LogoutButton from "@/components/LogoutButton";
 import GameChart from "@/components/GameChart";
 import { getOrCreateGame } from "@/lib/game/getOrCreateGame";
 import ResetGameButton from "@/components/ResetGameButton";
+import Leaderboard from "@/components/Leaderboard";
 
 export default async function GamePage() {
   const supabase = await createClient();
@@ -49,6 +50,8 @@ export default async function GamePage() {
       {!game.game_over && <DecisionPanel />}
 
       <GameChart history={history} />
+
+      <Leaderboard />
 
       <LogoutButton />
     </main>
