@@ -3,6 +3,18 @@ import { createClient } from "@/lib/supabase/server";
 export async function getOrCreateGame(userId: string) {
   const supabase = await createClient();
 
+  // Get authenticated user to extract email
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("User not authenticated");
+  }
+
+  const email = user.email ?? "player";
+  const username = email.split("@")[0];
+
   // Check if game already exists
   const { data: existingGame } = await supabase
     .from("games")
@@ -12,11 +24,12 @@ export async function getOrCreateGame(userId: string) {
 
   if (existingGame) return existingGame;
 
-  // Try to create the game
+  // Create game
   const { data: newGame, error } = await supabase
     .from("games")
     .insert({
       user_id: userId,
+      username,
       cash: 1000000,
       engineers: 4,
       sales_staff: 2,
@@ -29,7 +42,7 @@ export async function getOrCreateGame(userId: string) {
     .select()
     .single();
 
-  // Handle duplicate creation race condition
+  // Handle race condition (two requests creating same game)
   if (error && error.code === "23505") {
     const { data: game } = await supabase
       .from("games")
@@ -40,12 +53,11 @@ export async function getOrCreateGame(userId: string) {
     return game;
   }
 
-  // Handle other errors
   if (error || !newGame) {
     throw new Error("Failed to create game");
   }
 
-  // Insert initial history row (Q1)
+  // Insert first history row
   await supabase.from("game_history").insert({
     game_id: newGame.id,
     quarter: 1,

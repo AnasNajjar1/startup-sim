@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET() {
-  const supabase = createAdminClient();
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("games")
-    .select("user_id, cumulative_profit, quarter")
-    .eq("game_over", true)
+    .select("username, cumulative_profit")
+    .gt("quarter", 1)
     .order("cumulative_profit", { ascending: false })
     .limit(10);
 
@@ -15,5 +15,5 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data ?? []);
+  return NextResponse.json(data);
 }

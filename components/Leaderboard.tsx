@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 interface LeaderboardEntry {
-  user_id: string;
+  username: string;
   cumulative_profit: number;
 }
 
@@ -11,9 +11,10 @@ export default function Leaderboard() {
   const [data, setData] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
-    fetch("/api/leaderboard", { cache: "no-store" })
+    fetch("/api/leaderboard")
       .then((res) => res.json())
-      .then(setData);
+      .then(setData)
+      .catch(console.error);
   }, []);
 
   return (
@@ -22,8 +23,11 @@ export default function Leaderboard() {
 
       <ol className="space-y-2">
         {data.map((entry, index) => (
-          <li key={entry.user_id} className="flex justify-between">
-            <span>#{index + 1}</span>
+          <li key={index} className="flex justify-between">
+            <span>
+              #{index + 1} {entry.username}
+            </span>
+
             <span>
               {new Intl.NumberFormat("en-US", {
                 style: "currency",
