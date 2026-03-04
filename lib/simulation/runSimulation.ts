@@ -5,60 +5,57 @@ import { GameState, Decisions, SimulationResult } from "./types";
  * It updates workforce, quality, demand, revenue, costs, and cash position.
  */
 export function runSimulation(state: GameState, decisions: Decisions): SimulationResult {
-  // Base industry salary used as reference for payroll calculation
   const INDUSTRY_SALARY = 30000;
 
-  // Updated workforce after hiring decisions
+  // Apply hiring decisions
   const engineers = state.engineers + decisions.engineers;
   const salesStaff = state.sales_staff + decisions.sales;
 
-  // Player-selected salary percentage relative to industry salary
+  // Salary cost per employee
   const salaryCost = (decisions.salaryPct / 100) * INDUSTRY_SALARY;
 
-  // Product quality improves as more engineers work on the product
+  // Product quality improvement
   let quality = state.quality + engineers * 0.5;
 
-  // Cap quality at a maximum of 100
+  // Cap quality at 100
   quality = Math.min(quality, 100);
 
-  // Market demand is influenced positively by product quality
-  // and negatively by higher pricing
+  // Market demand formula
   let demand = quality * 10 - decisions.price * 0.0001;
 
-  // Demand cannot be negative
+  // Demand floor
   demand = Math.max(demand, 0);
 
-  // Units sold depend on market demand and size of the sales team
+  // Units sold
   const unitsSold = Math.floor(demand * salesStaff * 0.5);
 
-  // Revenue generated from units sold at the chosen price
+  // Revenue
   const revenue = decisions.price * unitsSold;
 
-  // Total payroll cost for engineers and sales staff
+  // Payroll cost
   const payroll = salaryCost * (engineers + salesStaff);
 
-  // Net income after paying salaries
+  // Net income
   const netIncome = revenue - payroll;
 
-  // Hiring cost penalty for recruiting new employees
+  // Hiring cost (one-time)
   const hireCost = (decisions.engineers + decisions.sales) * 5000;
 
-  // Updated cash position after profit/loss and hiring costs
+  // Updated cash
   const cash = state.cash + netIncome - hireCost;
 
-  // Running cumulative profit across all quarters
+  // Track cumulative profit
   const cumulativeProfit = state.cumulative_profit + netIncome;
 
-  // Advance the simulation to the next quarter
+  // Advance quarter
   const nextQuarter = state.quarter + 1;
 
-  // Game ends if company goes bankrupt or reaches quarter limit
+  // Win / lose conditions
   const lose = cash <= 0;
   const win = nextQuarter >= 40 && cash > 0;
 
   const gameOver = lose || win;
 
-  // Return the updated game state and financial results
   return {
     quarter: nextQuarter,
     cash,
