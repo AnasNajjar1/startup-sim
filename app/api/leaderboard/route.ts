@@ -7,6 +7,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from("games")
     .select("user_id, cumulative_profit, quarter")
+    .eq("game_over", true)
     .order("cumulative_profit", { ascending: false })
     .limit(10);
 
