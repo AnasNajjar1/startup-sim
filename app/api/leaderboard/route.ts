@@ -15,5 +15,11 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json(data);
+  const leaderboard =
+    data?.map((entry) => ({
+      username: entry.username || "player",
+      cumulative_profit: entry.cumulative_profit,
+    })) ?? [];
+
+  return NextResponse.json(leaderboard);
 }
