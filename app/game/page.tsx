@@ -28,7 +28,7 @@ export default async function GamePage() {
     .eq("game_id", game.id)
     .order("quarter", { ascending: true });
 
-  const win = game.quarter >= 40 && game.cash > 0;
+  const win = game.quarter >= 5 && game.cash > 0;
 
   return (
     <main className="min-h-screen p-8 flex flex-col gap-8 animate-fade-in">
@@ -63,11 +63,11 @@ export default async function GamePage() {
       />
 
       {/* Game over message */}
-      {game.game_over && (
+      {(game.game_over || win) && (
         <div
-          className={`p-3 rounded text-center ${game.win ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
+          className={`p-3 rounded text-center ${win ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
         >
-          {game.win
+          {win
             ? "Congratulations — Your startup survived 10 years!"
             : "Game Over — Your startup ran out of cash."}
         </div>
