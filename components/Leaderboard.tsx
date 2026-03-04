@@ -11,7 +11,7 @@ export default function Leaderboard() {
   const [data, setData] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
-    fetch("/api/leaderboard")
+    fetch("/api/leaderboard", { cache: "no-store" })
       .then((res) => res.json())
       .then(setData);
   }, []);
