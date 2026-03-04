@@ -4,7 +4,10 @@ import { GameState, Decisions, SimulationResult } from "./types";
  * Runs one simulation step (one quarter) of the startup game.
  * It updates workforce, quality, demand, revenue, costs, and cash position.
  */
-export function runSimulation(state: GameState, decisions: Decisions): SimulationResult {
+export function runSimulation(
+  state: GameState,
+  decisions: Decisions,
+): SimulationResult {
   const INDUSTRY_SALARY = 30000;
 
   // Apply hiring decisions
@@ -66,5 +69,6 @@ export function runSimulation(state: GameState, decisions: Decisions): Simulatio
     netIncome,
     cumulative_profit: cumulativeProfit,
     game_over: gameOver,
+    win,
   };
 }

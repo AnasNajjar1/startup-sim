@@ -15,13 +15,14 @@ export interface Decisions {
 }
 
 export interface SimulationResult {
-  quarter: number
-  cash: number
-  engineers: number
-  sales_staff: number
-  quality: number
-  revenue: number
-  netIncome: number
-  cumulative_profit: number
-  game_over: boolean
+  quarter: number;
+  cash: number;
+  engineers: number;
+  sales_staff: number;
+  quality: number;
+  revenue: number;
+  netIncome: number;
+  cumulative_profit: number;
+  game_over: boolean;
+  win?: boolean;
 }

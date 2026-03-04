@@ -63,13 +63,13 @@ export default async function GamePage() {
       />
 
       {/* Game over message */}
-      {game.game_over && !win && (
-        <div className="flex flex-col items-center gap-4">
-          <div className="bg-red-100 p-4 rounded text-red-700 font-bold">
-            Game Over — Your startup ran out of cash.
-          </div>
-
-          <ResetGameButton />
+      {game.game_over && (
+        <div
+          className={`p-3 rounded text-center ${game.win ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
+        >
+          {game.win
+            ? "Congratulations — Your startup survived 10 years!"
+            : "Game Over — Your startup ran out of cash."}
         </div>
       )}
 
