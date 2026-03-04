@@ -4,18 +4,19 @@ import { GameState, Decisions, SimulationResult } from "./types";
  * Runs one simulation step (one quarter) of the startup game.
  * It updates workforce, quality, demand, revenue, costs, and cash position.
  */
-export function runSimulation(
-  state: GameState,
-  decisions: Decisions,
-): SimulationResult {
+export function runSimulation(state: GameState, decisions: Decisions): SimulationResult {
   const INDUSTRY_SALARY = 30000;
 
+  const engineersToHire = Math.max(0, decisions.engineers);
+  const salesToHire = Math.max(0, decisions.sales);
+
   // Apply hiring decisions
-  const engineers = state.engineers + decisions.engineers;
-  const salesStaff = state.sales_staff + decisions.sales;
+  const engineers = state.engineers + engineersToHire;
+  const salesStaff = state.sales_staff + salesToHire;
 
   // Salary cost per employee
-  const salaryCost = (decisions.salaryPct / 100) * INDUSTRY_SALARY;
+  const salaryPct = Math.min(Math.max(decisions.salaryPct, 50), 200);
+  const salaryCost = (salaryPct / 100) * INDUSTRY_SALARY;
 
   // Product quality improvement
   let quality = state.quality + engineers * 0.5;
@@ -42,7 +43,7 @@ export function runSimulation(
   const netIncome = revenue - payroll;
 
   // Hiring cost (one-time)
-  const hireCost = (decisions.engineers + decisions.sales) * 5000;
+  const hireCost = (engineersToHire + salesToHire) * 5000;
 
   // Updated cash
   const cash = state.cash + netIncome - hireCost;

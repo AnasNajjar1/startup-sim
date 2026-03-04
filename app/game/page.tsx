@@ -12,9 +12,7 @@ export default async function GamePage() {
   const supabase = await createClient();
 
   // Get authenticated user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect("/signin");
 
@@ -41,10 +39,18 @@ export default async function GamePage() {
           <h2 className="text-lg font-semibold mb-3">Company Stats</h2>
 
           <p>Quarter: {game.quarter}</p>
-          <p className="font-mono">Cash: ${game.cash}</p>
+
+          <p className="font-mono">
+            Cash:{" "}
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(game.cash)}
+          </p>
+
           <p>Engineers: {game.engineers}</p>
           <p>Sales Staff: {game.sales_staff}</p>
-          <p>Product Quality: {game.quality}</p>
+          <p>Product Quality: {Math.round(game.quality)}</p>
         </div>
 
         {/* Leaderboard */}
@@ -62,23 +68,24 @@ export default async function GamePage() {
         sales={game.sales_staff}
       />
 
-      {/* Game over message */}
-      {(game.game_over || win) && (
-        <div
-          className={`p-3 rounded text-center ${win ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}
-        >
-          {win
-            ? "Congratulations — Your startup survived 10 years!"
-            : "Game Over — Your startup ran out of cash."}
+      {/* Bankruptcy message */}
+      {game.game_over && !win && (
+        <div className="p-3 rounded text-center bg-red-200 text-red-800">
+          Game Over — Your startup ran out of cash.
         </div>
       )}
 
+      {/* Victory message */}
       {win && (
         <div className="flex flex-col items-center gap-4">
           <div className="bg-green-100 p-4 rounded text-green-700 font-bold text-center">
             Victory — You reached Year 10 with a profitable startup!
             <br />
-            Total Profit: ${game.cumulative_profit}
+            Total Profit:{" "}
+            {new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(game.cumulative_profit)}
           </div>
 
           <ResetGameButton />
