@@ -4,6 +4,7 @@ import DecisionPanel from "@/components/DecisionPanel";
 import LogoutButton from "@/components/LogoutButton";
 import GameChart from "@/components/GameChart";
 import { getOrCreateGame } from "@/lib/game/getOrCreateGame";
+import ResetGameButton from "@/components/ResetGameButton";
 
 export default async function GamePage() {
   const supabase = await createClient();
@@ -36,8 +37,12 @@ export default async function GamePage() {
       </div>
 
       {game.game_over && (
-        <div className="bg-red-100 p-4 rounded text-red-700 font-bold">
-          Game Over — Your startup ran out of cash.
+        <div className="flex flex-col items-center gap-4">
+          <div className="bg-red-100 p-4 rounded text-red-700 font-bold">
+            Game Over — Your startup ran out of cash.
+          </div>
+
+          <ResetGameButton />
         </div>
       )}
 
