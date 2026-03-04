@@ -6,34 +6,53 @@ interface Props {
 }
 
 export default function OfficeVisualization({ engineers, sales }: Props) {
-  const totalDesks = 20; // office capacity
+  const columns = 5;
+
+  const employees = [
+    ...Array(engineers).fill("engineer"),
+    ...Array(sales).fill("sales"),
+  ];
+
+  // Calculate rows dynamically
+  const rows = Math.ceil(employees.length / columns) || 1;
+  const totalDesks = rows * columns;
 
   const desks = [];
 
   for (let i = 0; i < totalDesks; i++) {
-    if (i < engineers) desks.push("engineer");
-    else if (i < engineers + sales) desks.push("sales");
+    if (i < employees.length) desks.push(employees[i]);
     else desks.push("empty");
   }
 
   return (
-    <div className="border p-6 rounded w-full max-w-xl">
+    <div className="border p-6 rounded w-full max-w-xl transition-all duration-500">
       <h2 className="text-xl font-semibold mb-4">Office</h2>
 
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-5 gap-3 transition-all duration-500">
         {desks.map((desk, index) => {
           let color = "bg-gray-200";
+          let label = "";
 
-          if (desk === "engineer") color = "bg-blue-400";
-          if (desk === "sales") color = "bg-green-400";
+          if (desk === "engineer") {
+            color = "bg-blue-400";
+            label = "E";
+          }
+
+          if (desk === "sales") {
+            color = "bg-green-400";
+            label = "S";
+          }
 
           return (
             <div
               key={index}
-              className={`h-12 w-12 rounded flex items-center justify-center text-white text-xs ${color} transition transform hover:scale-110 duration-200`}
+              className={`h-12 w-12 rounded flex items-center justify-center text-white text-xs 
+              ${color}
+              transform transition-all duration-300 ease-out
+              hover:scale-110
+              animate-[fadeIn_0.3s_ease-out]`}
             >
-              {desk === "engineer" && "E"}
-              {desk === "sales" && "S"}
+              {label}
             </div>
           );
         })}
