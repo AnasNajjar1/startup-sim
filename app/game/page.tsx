@@ -12,11 +12,13 @@ export default async function GamePage() {
   const supabase = await createClient();
 
   // Get authenticated user
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) redirect("/signin");
 
-  // Fetch the user's game
+  // Fetch the user's game (or create a new one if missing)
   const game = await getOrCreateGame(user.id);
 
   // Fetch game history for the chart
@@ -26,6 +28,7 @@ export default async function GamePage() {
     .eq("game_id", game.id)
     .order("quarter", { ascending: true });
 
+  // Win condition (must match your simulation rule)
   const win = game.quarter >= 40 && game.cash > 0;
 
   return (
@@ -63,37 +66,39 @@ export default async function GamePage() {
       </div>
 
       {/* Office visualization */}
-      <OfficeVisualization
-        engineers={game.engineers}
-        sales={game.sales_staff}
-      />
+      <OfficeVisualization engineers={game.engineers} sales={game.sales_staff} />
 
-      {/* Bankruptcy message */}
-      {game.game_over && !win && (
-        <div className="p-3 rounded text-center bg-red-200 text-red-800">
-          Game Over — Your startup ran out of cash.
-        </div>
-      )}
-
-      {/* Victory message */}
-      {win && (
+      {/* End game message (win or lose) + reset */}
+      {game.game_over && (
         <div className="flex flex-col items-center gap-4">
-          <div className="bg-green-100 p-4 rounded text-green-700 font-bold text-center">
-            Victory — You reached Year 10 with a profitable startup!
-            <br />
-            Total Profit:{" "}
-            {new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "USD",
-            }).format(game.cumulative_profit)}
+          <div
+            className={`p-3 rounded text-center font-bold ${
+              win ? "bg-green-100 text-green-700" : "bg-red-200 text-red-800"
+            }`}
+          >
+            {win
+              ? "Congratulations — Your startup survived 10 years!"
+              : "Game Over — Your startup ran out of cash."}
+
+            {win && (
+              <>
+                <br />
+                Total Profit:{" "}
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                }).format(game.cumulative_profit)}
+              </>
+            )}
           </div>
 
+          {/* Always allow restarting once game is over */}
           <ResetGameButton />
         </div>
       )}
 
       {/* Decision panel */}
-      {!game.game_over && !win && <DecisionPanel />}
+      {!game.game_over && <DecisionPanel />}
 
       {/* Logout */}
       <div className="flex justify-center">

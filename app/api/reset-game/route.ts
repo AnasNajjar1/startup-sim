@@ -1,26 +1,46 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST() {
-  const supabase = await createClient()
+  const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
 
-  if (!user) return NextResponse.json({ error: "Not authenticated" }, { status: 401 })
+  if (userError) {
+    return NextResponse.json({ error: userError.message }, { status: 500 });
+  }
+
+  if (!user) {
+    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+  }
 
   // Get current game
-  const { data: game } = await supabase
+  const { data: game, error: gameError } = await supabase
     .from("games")
-    .select("*")
+    .select("id, user_id")
     .eq("user_id", user.id)
-    .single()
+    .single();
+
+  if (gameError) {
+    return NextResponse.json({ error: gameError.message }, { status: 500 });
+  }
 
   if (!game) {
-    return NextResponse.json({ error: "Game not found" }, { status: 404 })
+    return NextResponse.json({ error: "Game not found" }, { status: 404 });
+  }
+
+  // Clear old history first (optional order, but consistent)
+  const { error: deleteError } = await supabase
+    .from("game_history")
+    .delete()
+    .eq("game_id", game.id);
+
+  if (deleteError) {
+    return NextResponse.json({ error: deleteError.message }, { status: 500 });
   }
 
   // Reset game state
-  const { error } = await supabase
+  const { error: updateError } = await supabase
     .from("games")
     .update({
       quarter: 1,
@@ -29,32 +49,29 @@ export async function POST() {
       sales_staff: 2,
       quality: 50,
       cumulative_profit: 0,
-      game_over: false
+      game_over: false,
     })
     .eq("id", game.id)
+    .eq("user_id", user.id);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
   }
 
-  // Clear old history
-  await supabase
-    .from("game_history")
-    .delete()
-    .eq("game_id", game.id)
-
   // Insert initial history again
-  await supabase
-    .from("game_history")
-    .insert({
-      game_id: game.id,
-      quarter: 1,
-      cash: 1000000,
-      revenue: 0,
-      net_income: 0,
-      engineers: 4,
-      sales_staff: 2
-    })
+  const { error: insertError } = await supabase.from("game_history").insert({
+    game_id: game.id,
+    quarter: 1,
+    cash: 1000000,
+    revenue: 0,
+    net_income: 0,
+    engineers: 4,
+    sales_staff: 2,
+  });
 
-  return NextResponse.json({ success: true })
+  if (insertError) {
+    return NextResponse.json({ error: insertError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
 }
