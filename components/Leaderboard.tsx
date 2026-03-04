@@ -1,21 +1,20 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 
 interface LeaderboardEntry {
-  user_id: string
-  cumulative_profit: number
+  user_id: string;
+  cumulative_profit: number;
 }
 
 export default function Leaderboard() {
-
-  const [data, setData] = useState<LeaderboardEntry[]>([])
+  const [data, setData] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
     fetch("/api/leaderboard")
-      .then(res => res.json())
-      .then(setData)
-  }, [])
+      .then((res) => res.json())
+      .then(setData);
+  }, []);
 
   return (
     <div className="border p-6 rounded w-80">
@@ -25,10 +24,15 @@ export default function Leaderboard() {
         {data.map((entry, index) => (
           <li key={entry.user_id} className="flex justify-between">
             <span>#{index + 1}</span>
-            <span>${entry.cumulative_profit}</span>
+            <span>
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(entry.cumulative_profit)}
+            </span>
           </li>
         ))}
       </ol>
     </div>
-  )
+  );
 }
