@@ -28,7 +28,7 @@ export default async function GamePage() {
     .eq("game_id", game.id)
     .order("quarter", { ascending: true });
 
-  const win = game.quarter >= 5 && game.cash > 0;
+  const win = game.quarter >= 40 && game.cash > 0;
 
   return (
     <main className="min-h-screen p-8 flex flex-col gap-8 animate-fade-in">

@@ -55,7 +55,7 @@ export function runSimulation(
 
   // Win / lose conditions
   const lose = cash <= 0;
-  const win = nextQuarter >= 5 && cash > 0;
+  const win = nextQuarter >= 40 && cash > 0;
 
   const gameOver = lose || win;
 
