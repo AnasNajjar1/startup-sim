@@ -18,7 +18,7 @@ export default function ResetGameButton() {
   return (
     <button
       onClick={resetGame}
-      className="bg-black text-white px-4 py-2 rounded cursor-pointer hover:bg-gray-800 transition duration-200"
+      className="bg-black text-white px-4 py-2 rounded cursor-pointer hover:bg-gray-800 transition duration-200 hover:scale-105"
     >
       Start New Game
     </button>

@@ -53,7 +53,10 @@ export function runSimulation(state: GameState, decisions: Decisions): Simulatio
   const nextQuarter = state.quarter + 1;
 
   // Game ends if company goes bankrupt or reaches quarter limit
-  const gameOver = cash <= 0 || nextQuarter >= 12;
+  const lose = cash <= 0;
+  const win = nextQuarter >= 40 && cash > 0;
+
+  const gameOver = lose || win;
 
   // Return the updated game state and financial results
   return {

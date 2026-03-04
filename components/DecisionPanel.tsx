@@ -137,7 +137,7 @@ export default function DecisionPanel() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-black text-white p-2 cursor-pointer hover:bg-gray-800 transition"
+          className="bg-black text-white px-4 py-2 rounded cursor-pointer hover:bg-gray-800 transition duration-200 hover:scale-105"
         >
           {loading ? "Running Simulation..." : "Advance Quarter"}
         </button>
