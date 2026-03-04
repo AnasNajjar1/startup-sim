@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 export default function DecisionPanel() {
-  const [price, setPrice] = useState("100");
-  const [engineers, setEngineers] = useState("");
-  const [sales, setSales] = useState("");
-  const [salaryPct, setSalaryPct] = useState("100");
+  const [price, setPrice] = useState(100);
+  const [engineers, setEngineers] = useState(0);
+  const [sales, setSales] = useState(0);
+  const [salaryPct, setSalaryPct] = useState(100);
 
   const [revenue, setRevenue] = useState<number | null>(null);
   const [netIncome, setNetIncome] = useState<number | null>(null);
@@ -86,6 +86,9 @@ export default function DecisionPanel() {
         className="flex flex-col gap-4 border p-6 rounded w-80"
       >
         <h2 className="text-xl font-semibold">Quarterly Decisions</h2>
+        <p className="text-sm text-gray-600">
+          Hiring values represent new employees hired this quarter.
+        </p>
 
         <label className="flex flex-col text-sm">
           Unit Price
@@ -94,7 +97,7 @@ export default function DecisionPanel() {
             min="1"
             className="border p-2"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => setPrice(Number(e.target.value))}
           />
         </label>
 
@@ -103,9 +106,10 @@ export default function DecisionPanel() {
           <input
             type="number"
             min="0"
+            step="1"
             className="border p-2"
             value={engineers}
-            onChange={(e) => setEngineers(e.target.value)}
+            onChange={(e) => setEngineers(Number(e.target.value))}
             placeholder="0"
           />
         </label>
@@ -115,9 +119,10 @@ export default function DecisionPanel() {
           <input
             type="number"
             min="0"
+            step="1"
             className="border p-2"
             value={sales}
-            onChange={(e) => setSales(e.target.value)}
+            onChange={(e) => setSales(Number(e.target.value))}
             placeholder="0"
           />
         </label>
@@ -130,7 +135,7 @@ export default function DecisionPanel() {
             max="200"
             className="border p-2"
             value={salaryPct}
-            onChange={(e) => setSalaryPct(e.target.value)}
+            onChange={(e) => setSalaryPct(Number(e.target.value))}
           />
         </label>
 
@@ -144,8 +149,20 @@ export default function DecisionPanel() {
 
         {revenue !== null && (
           <div className="bg-green-50 p-4 rounded border mt-4">
-            <p>Revenue: ${revenue}</p>
-            <p>Net Income: ${netIncome}</p>
+            <p>
+              Revenue:{" "}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(revenue)}
+            </p>
+            <p>
+              Net Income:{" "}
+              {new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+              }).format(netIncome!)}
+            </p>
           </div>
         )}
       </form>
