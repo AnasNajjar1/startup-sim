@@ -1,9 +1,13 @@
-export default function Home() {
-  return (
-    <main className="flex h-screen items-center justify-center">
-      <h1 className="text-3xl font-bold">
-        Startup Simulation
-      </h1>
-    </main>
-  )
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+
+export default async function Home() {
+  const supabase = await createClient()
+  const { data } = await supabase.auth.getUser()
+
+  if (data.user) {
+    redirect('/game')
+  } else {
+    redirect('/signin')
+  }
 }
